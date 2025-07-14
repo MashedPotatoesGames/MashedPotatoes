@@ -2,9 +2,9 @@
 
 Potatoes, just mashed
 
-Arakye - QA, UX
-Arcaniel - Coder, Houdini Wizard
-Ebas - Creative Lead
-Eeb - Technical Lead
-Xanero - Organisation, random stuff
-Xelif - Mädchen für alles
+<p> Arakye - QA, UX </p>
+<p> Arcaniel - Coder, Houdini Wizard </p>
+<p> Ebas - Creative Lead </p>
+<p> Eeb - Technical Lead </p>
+<p> Xanero - Organisation, random stuff </p>
+<p> Xelif - Mädchen für alles </p>
