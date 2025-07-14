@@ -7,4 +7,4 @@ Potatoes, just mashed
 <p> Ebas - Creative Lead </p>
 <p> Eeb - Technical Goblin </p>
 <p> Xanero - Organisation, random stuff </p>
-<p> Xelif - Mädchen für alles </p>
+<p> Xelif - Tool vom Dienst </p>
