@@ -3,88 +3,151 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InputAction.h"
-#include "InputMappingContext.h"
+#include "InputAction.h" // Required for FInputActionValue
+#include "InputMappingContext.h" // Required for UInputMappingContext
 #include "GameFramework/Pawn.h"
-#include "MVehicleBase.generated.h"
+#include "MVehicleBase.generated.h" // Always the last include for UCLASS()
 
+// Forward declarations to avoid including full headers in the .h file
+// This speeds up compile times. Full headers are included in the .cpp.
+class UStaticMeshComponent;
 class UArrowComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputComponent; // For SetupPlayerInputComponent
+struct FInputActionValue; // For input action functions
 
 UCLASS()
 class MASHEDPOTATOES_API AMVehicleBase : public APawn
 {
-
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UStaticMeshComponent* BodyMeshC;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UArrowComponent* ArrowC_FR;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UArrowComponent* ArrowC_FL;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UArrowComponent* ArrowC_RR;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UArrowComponent* ArrowC_RL;
+    // Sets default values for this pawn's properties
+    AMVehicleBase();
 
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	USpringArmComponent* SpringArmComponent;
-	
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* CameraC;
+    // --- Components ---
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UStaticMeshComponent* BodyMeshC;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UArrowComponent* ArrowC_FR;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UArrowComponent* ArrowC_FL;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UArrowComponent* ArrowC_RR;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UArrowComponent* ArrowC_RL;
 
-	//Exposed Vars
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float RestLength = 140;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float SpringTravelLength = 75;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float WheelRadius = 34;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float SpringForceConst = 5000;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float DamperForceConst = 5000;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float ForwardForceConst = 100000;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	float MaxSteeringAngle = 30;
-	UPROPERTY(EditAnywhere, Category="Enhanced Input")
-	UInputMappingContext* InputMapping;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USceneComponent* WheelScene_FR;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USceneComponent* WheelScene_FL;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USceneComponent* WheelScene_RR;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USceneComponent* WheelScene_RL;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Enhanced Input")
-	UInputAction* InputDrive;
-	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Enhanced Input")
-	UInputAction* InputSteer;
-	
-	// Sets default values for this pawn's properties
-	AMVehicleBase();
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    USpringArmComponent* SpringArmComponent;
+    
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UCameraComponent* CameraC;
 
+    // --- Car Physics Parameters (Exposed in Editor) ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
+    float RestLength = 100.0f; // Ideal length of the spring when no force is applied
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
+    float SpringTravelLength = 150.0f; // How much the spring can compress/extend from its rest length
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
+    float WheelRadius = 50.0f; // Radius of the wheel, used for line tracing
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
+    float SpringForceConst = 7000.0f; // Stiffness of the suspension spring
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
+    float DamperForceConst = 2456.0f; // Damping for the suspension (absorbs oscillations)
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
+    float ForwardForceConst = 300000.0f; // Force applied for acceleration
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
+    float FrictionConst = 1000.0f; // General friction coefficient for lateral slip
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
+    float DragConst = 100.0f; // Controls general drag opposing motion (e.g., rolling resistance, air resistance)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
+    float BrakeConst = 150.0f; // Force applied for braking
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Steering")
+    float MaxSteeringAngle = 30.0f; // Maximum angle the front wheels can turn
+    // In MVehicleBase.h, under your UPROPERTY section:
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Braking")
+    float BrakeStopForceConst = 13000.0f; // Constant for a strong brake hold when nearly stopped
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Braking")
+    float BrakeStopThresholdVelocity = 50.0f; // Velocity threshold below which BrakeStopForceConst applies
+    // --- Enhanced Input Properties ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+    UInputMappingContext* InputMapping;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+    UInputAction* InputDrive;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+    UInputAction* InputSteer;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
+    UInputAction* InputBrake;
+    
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
+    // Called after components are initialized (e.g., physics setup)
+    virtual void PostInitializeComponents() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    // --- Internal State Variables ---
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Car State")
+    bool bBrakeApplied; // True if brake input is active
+
+    // Current interpolated values for input axes (used in Tick)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Car State")
+    float ForwardAxisValue;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Car State")
+    float SideAxisValue;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Damping")
+    float RestingDragConst = 5000.0f; // Constant for stronger drag when at rest/low speed
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Damping")
+    float StopThresholdVelocity = 50.0f; // Velocity threshold below which resting drag applies
+    // Raw input values (set by input actions)
+    float ForwardAxisInput;
+    float SideAxisInput;
+
+    // NEW: Stores the current steering angle applied to front wheels
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Car State")
+    float CurrentFrontWheelSteerAngle;
+
+public: 
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
+
+    // Called to bind functionality to input
+    virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
-	TArray<UArrowComponent*> WheelArrowComponentHolder;
-	float MinLength;
-	float MaxLength;
-	float SpringLength[4] = {0,0,0,0};
-	float ForwardAxisValue;
-	float SideAxisValue;
-	FCollisionQueryParams LineTraceCollisionQuery;
-	void UpdateVehicleForce(int WheelArrowIndex, float DeltaTime);
-	void Accelerate(const FInputActionValue& Value);
-	void Steer(const FInputActionValue& Value);
+    // --- Internal Physics Calculation Variables ---
+    TArray<UArrowComponent*> WheelArrowComponentHolder; // Array to hold references to wheel arrow components
+    TArray<USceneComponent*> WheelSceneComponentHolder; // Array to hold references to wheel meshes
+    float MinLength; // Minimum compressed length of the spring
+    float MaxLength; // Maximum extended length of the spring
+    float SpringLength[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // Current length of each spring
+    FCollisionQueryParams LineTraceCollisionQuery; // Parameters for the wheel line trace
+
+    // --- Private Helper Functions ---
+    void UpdateVehicleForce(int WheelArrowIndex, float DeltaTime); // Calculates and applies forces for a single wheel
+    
+    // Input Action Callbacks
+    void Accelerate(const FInputActionValue& Value);
+    void Steer(const FInputActionValue& Value);
+    void BrakeStarted(const FInputActionValue& Value);
+    void BrakeEnded(const FInputActionValue& Value);
 };
