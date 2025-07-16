@@ -56,35 +56,48 @@ public:
 
     // --- Car Physics Parameters (Exposed in Editor) ---
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
-    float RestLength = 100.0f; // Ideal length of the spring when no force is applied
+    // Ideal length of the spring when no force is applied
+    float RestLength = 100.0f; 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
-    float SpringTravelLength = 150.0f; // How much the spring can compress/extend from its rest length
+    // How much the spring can compress/extend from its rest length
+    float SpringTravelLength = 150.0f; 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
-    float WheelRadius = 50.0f; // Radius of the wheel, used for line tracing
+    // Radius of the wheel, used for line tracing
+    float WheelRadius = 50.0f; 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
-    float SpringForceConst = 7000.0f; // Stiffness of the suspension spring
+    // Stiffness of the suspension spring
+    float SpringForceConst = 7000.0f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Suspension")
-    float DamperForceConst = 2456.0f; // Damping for the suspension (absorbs oscillations)
+    // Damping for the suspension (absorbs oscillations)
+    float DamperForceConst = 2456.0f;
 
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Engine")
+    // Force applied for acceleration
+    float ForwardForceConst = 300000.0f; 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
-    float ForwardForceConst = 300000.0f; // Force applied for acceleration
+    // General friction coefficient for lateral slip
+    float FrictionConst = 1000.0f; 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
-    float FrictionConst = 1000.0f; // General friction coefficient for lateral slip
+    // Controls general drag opposing motion (e.g., rolling resistance, air resistance)
+    float DragConst = 100.0f;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
-    float DragConst = 100.0f; // Controls general drag opposing motion (e.g., rolling resistance, air resistance)
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Forces")
-    float BrakeConst = 150.0f; // Force applied for braking
+    // Force applied for braking
+    float BrakeConst = 150.0f; 
 
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Steering")
-    float MaxSteeringAngle = 30.0f; // Maximum angle the front wheels can turn
-    // In MVehicleBase.h, under your UPROPERTY section:
+    // Maximum angle the front wheels can turn
+    float MaxSteeringAngle = 30.0f; 
+   
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Braking")
+    // Constant for a strong brake hold when nearly stopped
+    float BrakeStopForceConst = 13000.0f; 
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Braking")
-    float BrakeStopForceConst = 13000.0f; // Constant for a strong brake hold when nearly stopped
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Braking")
-    float BrakeStopThresholdVelocity = 50.0f; // Velocity threshold below which BrakeStopForceConst applies
-    // --- Enhanced Input Properties ---
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Car Physics|Braking")
+    // Velocity threshold below which BrakeStopForceConst applies
+    float BrakeStopThresholdVelocity = 50.0f;
+   
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input")
     UInputMappingContext* InputMapping;
 
@@ -114,10 +127,12 @@ protected:
     float SideAxisValue;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Damping")
-    float RestingDragConst = 5000.0f; // Constant for stronger drag when at rest/low speed
+    // Constant for stronger drag when at rest/low speed
+    float RestingDragConst = 5000.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vehicle Physics|Damping")
-    float StopThresholdVelocity = 50.0f; // Velocity threshold below which resting drag applies
+    // Velocity threshold below which resting drag applies
+    float StopThresholdVelocity = 50.0f; 
     // Raw input values (set by input actions)
     float ForwardAxisInput;
     float SideAxisInput;
@@ -135,15 +150,21 @@ public:
 
 private:
     // --- Internal Physics Calculation Variables ---
-    TArray<UArrowComponent*> WheelArrowComponentHolder; // Array to hold references to wheel arrow components
-    TArray<USceneComponent*> WheelSceneComponentHolder; // Array to hold references to wheel meshes
-    float MinLength; // Minimum compressed length of the spring
-    float MaxLength; // Maximum extended length of the spring
-    float SpringLength[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // Current length of each spring
-    FCollisionQueryParams LineTraceCollisionQuery; // Parameters for the wheel line trace
+    // Array to hold references to wheel arrow components
+    TArray<UArrowComponent*> WheelArrowComponentHolder;
+    // Array to hold references to wheel meshes
+    TArray<USceneComponent*> WheelSceneComponentHolder;
+    // Minimum compressed length of the spring
+    float MinLength;
+    // Maximum extended length of the spring
+    float MaxLength;
+    // Current length of each spring
+    float SpringLength[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    // Parameters for the wheel line trace
+    FCollisionQueryParams LineTraceCollisionQuery;
 
-    // --- Private Helper Functions ---
-    void UpdateVehicleForce(int WheelArrowIndex, float DeltaTime); // Calculates and applies forces for a single wheel
+    // Calculates and applies forces for a single wheel
+    void UpdateVehicleForce(int WheelArrowIndex, float DeltaTime); 
     
     // Input Action Callbacks
     void Accelerate(const FInputActionValue& Value);

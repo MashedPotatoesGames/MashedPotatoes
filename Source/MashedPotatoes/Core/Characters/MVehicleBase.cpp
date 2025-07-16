@@ -22,7 +22,6 @@ AMVehicleBase::AMVehicleBase()
     {
        BodyMeshC->SetStaticMesh(CarMesh);
     }
-    
     // Attach arrow components to the body mesh
     ArrowC_FL = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowC_FL"));
     ArrowC_FL->SetupAttachment(BodyMeshC, FName("WheelFL"));
