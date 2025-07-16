@@ -122,7 +122,7 @@ protected:
     float ForwardAxisInput;
     float SideAxisInput;
 
-    // NEW: Stores the current steering angle applied to front wheels
+    // Stores the current steering angle applied to front wheels
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Car State")
     float CurrentFrontWheelSteerAngle;
 

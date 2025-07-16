@@ -57,12 +57,7 @@ AMVehicleBase::AMVehicleBase()
     
     CameraC = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraC"));
     CameraC->SetupAttachment(SpringArmComponent);
-
-    // Initialize new properties for resting drag (you'll need to add these to your .h file)
-    // RestingDragConst = 1000.0f; // Example default value, adjust in editor
-    // StopThresholdVelocity = 50.0f; // Example default value, adjust in editor
-    // BrakeStopForceConst = 20000.0f; // Example default value, adjust in editor
-    // BrakeStopThresholdVelocity = 100.0f; // Example default value, adjust in editor
+    
 }
 
 void AMVehicleBase::BeginPlay()
