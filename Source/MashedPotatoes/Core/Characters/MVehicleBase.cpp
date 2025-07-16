@@ -195,7 +195,7 @@ void AMVehicleBase::UpdateVehicleForce(int WheelArrowIndex, float DeltaTime)
         // Apply strong braking force directly opposing the current longitudinal velocity
         activeLongitudinalForce = -longitudinalVelocity * BrakeConst;
 
-        // NEW: Apply a strong "hold" force when braking and nearly stopped
+        // Apply a strong "hold" force when braking and nearly stopped
         if (FMath::Abs(longitudinalVelocity) < BrakeStopThresholdVelocity)
         {
             // Apply a fixed force in the opposite direction of current velocity
