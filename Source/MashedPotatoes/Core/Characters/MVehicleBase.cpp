@@ -69,7 +69,7 @@ void AMVehicleBase::BeginPlay()
     // Setup for line trace collision query
     const FName TraceTag("MyTraceTag");
     LineTraceCollisionQuery.TraceTag = TraceTag;
-    LineTraceCollisionQuery.bDebugQuery = true; // Enable debug drawing for the trace
+    // LineTraceCollisionQuery.bDebugQuery = true; // Enable debug drawing for the trace
     LineTraceCollisionQuery.AddIgnoredActor(this); // Ignore the car itself in the trace
 }
 
